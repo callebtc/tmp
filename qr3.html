@@ -234,7 +234,7 @@
         <!-- <button onclick="webviewClose();">Close</button> -->
         <div class="wrapper">
             <div>
-                <input type="number" id="invoiceAmount" placeholder="amount in sat" style="width: 80%"></input>
+                <input type="number" min="1" inputmode="numeric" pattern="[0-9]*" id="invoiceAmount" placeholder="amount in sat" style="width: 80%"></input>
             </div>
             <div>
                 <button onclick="invoiceButtonClick();" style="display: inline;" id="requestInvoice">Invoice</button>
