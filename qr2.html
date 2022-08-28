@@ -277,11 +277,17 @@
     document.querySelector('#initData').innerHTML = JSON.stringify(initData, null, 2);
     document.querySelector('#initDataUnsafe').innerHTML = JSON.stringify(initDataUnsafe, null, 2);
     document.querySelector('#themeData').html(JSON.stringify(Telegram.WebApp.themeParams, null, 2));
-
+    
     Telegram.WebApp.MainButton
         .setText('Close')
         .show()
         .onClick(function(){ webviewClose(); });
+    
+    
+    Telegram.WebApp.BackButton.isVisible = true;
+    Telegram.WebApp.BackButton.show();
+    Telegram.WebApp.MainButton.show();
+
 
     Telegram.WebApp.onEvent('themeChanged', function() {
         document.querySelector('#themeData').innerHTML = JSON.stringify(Telegram.WebApp.themeParams, null, 2);
