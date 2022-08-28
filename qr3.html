@@ -257,10 +257,26 @@
     // document.querySelector('#initData').innerHTML = JSON.stringify(initData, null, 2);
     // document.querySelector('#initDataUnsafe').innerHTML = JSON.stringify(initDataUnsafe, null, 2);
 
-    // react to theme changes
-    document.querySelector('#themeData').html(JSON.stringify(Telegram.WebApp.themeParams, null, 2));
-    Telegram.WebApp.onEvent('themeChanged', function() {
-        document.querySelector('#themeData').innerHTML = JSON.stringify(Telegram.WebApp.themeParams, null, 2);
+    try {
+        document.querySelector('#themeData').html(JSON.stringify(Telegram.WebApp.themeParams, null, 2));
+        Telegram.WebApp.onEvent('themeChanged', function() {
+            document.querySelector('#themeData').innerHTML = JSON.stringify(Telegram.WebApp.themeParams, null, 2);
+        });
+    } catch (error) {
+        console.error(error);
+    }
+
+
+
+
+    // listen for enter in input field
+    var el = document.getElementById("invoiceAmount");
+    console.log("Element:" + el)
+    el.addEventListener("keypress", function(event) {
+        console.log(event.key)
+        if (event.key === "Enter") {
+            document.getElementById("requestInvoice").click();
+        }
     });
 
     function webviewClose() {
