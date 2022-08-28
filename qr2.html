@@ -9,7 +9,7 @@
     <meta name="MobileOptimized" content="176" />
     <meta name="HandheldFriendly" content="True" />
     <meta name="robots" content="noindex,nofollow" />
-    <title></title>
+    <title>LNURL</title>
     <script src="https://unpkg.com/kjua@0.6.0/dist/kjua.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
     <script>
@@ -53,9 +53,8 @@
             cursor: auto;
             pointer-events: none;
         }
-
+/* 
         button.close_btn {
-            /*position: fixed;*/
             position: absolute;
             left: 0;
             right: 0;
@@ -64,7 +63,7 @@
             margin: 0;
             padding: 16px 20px;
             text-transform: uppercase;
-        }
+        } */
 
         section {
             padding: 15px 15px 65px;
@@ -190,8 +189,6 @@
         display: flex;
         justify-content: center;
         margin: 0px;
-        /* width: calc(100vw - 10px * 2); */
-        /* height: calc(100vw - 10px * 2); */
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
@@ -217,6 +214,8 @@
     </div>
 
     <div id="buttons">
+        <button onclick="webviewClose();">Close Webview</button>
+        <small>(Closes window)</small>
         <button onclick="webviewExpand();">Expand Webview</button>
         <small>(The window goes fullscreen)</small>
         <button onclick="toggleMainButton(this);">Hide Main Button</button>
@@ -225,7 +224,7 @@
         <small>(The bot will recieve a message with filled <code>web_app_data</code> field)</small>
     </div>
 
-    <h3>Test links</h3>
+    <!-- <h3>Test links</h3>
     <ul>
         <li><a href="?nextpage=1">Regular link #1</a> (opens inside webview)</li>
         <li><a href="https://telegram.org/" target="_blank">target="_blank" link</a> (opens outside webview)</li>
@@ -233,9 +232,9 @@
             webview)</li>
         <li><a href="https://t.me/like">LikeBot t.me link</a> (opens inside Telegram app)</li>
         <li><a href="tg://resolve?domain=vote">VoteBot tg:// link</a> (does not open)</li>
-    </ul>
+    </ul> -->
 
-    <h3>Test permissions</h3>
+    <!-- <h3>Test permissions</h3>
     <ul>
         <li>
             <a href="javascript:;" onclick="return requestLocation();">Request Location</a>
@@ -249,7 +248,7 @@
             <a href="javascript:;" onclick="return requestAudio();">Request Audio</a>
             <span id="audioData"></span>
         </li>
-    </ul>
+    </ul> -->
 
     <h3>Init Data: </h3>
     <pre id="initData"></pre>
@@ -280,7 +279,7 @@
     document.querySelector('#themeData').html(JSON.stringify(Telegram.WebApp.themeParams, null, 2));
 
     Telegram.WebApp.MainButton
-        .setText('CLOSE WEBVIEW')
+        .setText('Close')
         .show()
         .onClick(function(){ webviewClose(); });
 
@@ -314,39 +313,39 @@
         }
     }
 
-    function requestLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                document.querySelector('#locationData').innerHTML = '(' + position.coords.latitude + ', ' + position.coords.longitude + ')';
-            });
-        } else {
-            document.querySelector('#locationData').innerHTML = '(Geolocation is not supported in this browser)';
-        }
+    // function requestLocation() {
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition(function (position) {
+    //             document.querySelector('#locationData').innerHTML = '(' + position.coords.latitude + ', ' + position.coords.longitude + ')';
+    //         });
+    //     } else {
+    //         document.querySelector('#locationData').innerHTML = '(Geolocation is not supported in this browser)';
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    function requestVideo() {
-        if (navigator.mediaDevices) {
-            navigator.mediaDevices.getUserMedia({ audio: false, video: true }).then(function(stream) {
-                document.querySelector('#videoData').innerHTML = '(Access granted)';
-            });
-        } else {
-            document.querySelector('#videoData').innerHTML = '(Media devices is not supported in this browser)';
-        }
-        return false;
-    }
+    // function requestVideo() {
+    //     if (navigator.mediaDevices) {
+    //         navigator.mediaDevices.getUserMedia({ audio: false, video: true }).then(function(stream) {
+    //             document.querySelector('#videoData').innerHTML = '(Access granted)';
+    //         });
+    //     } else {
+    //         document.querySelector('#videoData').innerHTML = '(Media devices is not supported in this browser)';
+    //     }
+    //     return false;
+    // }
 
-    function requestAudio() {
-        if (navigator.mediaDevices) {
-            navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function(stream) {
-                document.querySelector('#audioData').innerHTML = '(Access granted)';
-            });
-        } else {
-            document.querySelector('#audioData').innerHTML = '(Media devices is not supported in this browser)';
-        }
-        return false;
-    }
+    // function requestAudio() {
+    //     if (navigator.mediaDevices) {
+    //         navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function(stream) {
+    //             document.querySelector('#audioData').innerHTML = '(Access granted)';
+    //         });
+    //     } else {
+    //         document.querySelector('#audioData').innerHTML = '(Media devices is not supported in this browser)';
+    //     }
+    //     return false;
+    // }
 </script>
 </body>
 </html>
