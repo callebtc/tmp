@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,6 +53,16 @@
             opacity: 0.6;
             cursor: auto;
             pointer-events: none;
+        }
+
+        input {
+            font-size: 14px;
+            text-align: center; 
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--tg-theme-button-color, #f5f5f5);
+            color: var(--tg-theme-button-text-color, #1a1a1a);
         }
 
         section {
@@ -196,13 +207,19 @@
         width: 100% !important;
         height: 100% !important;
         }
+
+        .wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 12px 20px;
+        }
     </style>
 </head>
 
 <body>
 
 <section>
-    <h1>username@ln.tips</h1>
+    <h1 id="greeting"></h1>
 
     <div class="qr-container">
         <div class="qr" id="qr">
@@ -210,38 +227,59 @@
     </div>
 
     <div id="buttons">
-        <button onclick="webviewClose();">Close</button>
+        <!-- <button onclick="webviewClose();">Close</button> -->
+        <div class="wrapper">
+            <div>
+                <input type="number" id="invoiceAmount" placeholder="1000 sat"></input>
+            </div>
+            <div>
+                <button onclick="getInvoice(this, "callback_url");" style="display: inline; margin: 0px;">Invoice</button>
+            </div>
+        </div>
     </div>
 </section>
 
 <script type="application/javascript">
     Telegram.WebApp.ready();
 
-    const qr = document.getElementById('qr');
-    if ( qr ) {
-    const qrGfx = kjua({
-        text: "LNURLEXAMPLELNURLEXAMPLELNURLEXAMPLELNURLEXAMPLE",
-        rounded: 50,
-        size: 500,
-        render: 'canvas',
-    });
-    qr.appendChild( qrGfx );
-    }
-
+    // render the LNURL pay QR code
+    var s = "LNURLPAY LNURLPAY LNURLPAY LNURLPAY v v LNURLPAY LNURLPAY";
+    renderQr(s);
+    
+    // data passed form telegram server
     const initData = Telegram.WebApp.initData || '';
     const initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
 
-    document.querySelector('#greeting').innerHTML = `Hi, ${initDataUnsafe.user.first_name}!`;
-    document.querySelector('#initData').innerHTML = JSON.stringify(initData, null, 2);
-    document.querySelector('#initDataUnsafe').innerHTML = JSON.stringify(initDataUnsafe, null, 2);
-    document.querySelector('#themeData').html(JSON.stringify(Telegram.WebApp.themeParams, null, 2));
+    document.querySelector('#greeting').innerHTML = "username@ln.tips";
+    // document.querySelector('#initData').innerHTML = JSON.stringify(initData, null, 2);
+    // document.querySelector('#initDataUnsafe').innerHTML = JSON.stringify(initDataUnsafe, null, 2);
 
+    // react to theme changes
+    document.querySelector('#themeData').html(JSON.stringify(Telegram.WebApp.themeParams, null, 2));
     Telegram.WebApp.onEvent('themeChanged', function() {
         document.querySelector('#themeData').innerHTML = JSON.stringify(Telegram.WebApp.themeParams, null, 2);
     });
 
     function webviewClose() {
         Telegram.WebApp.close();
+    }
+
+    function renderQr(payload) {
+        const qr = document.getElementById('qr');
+        qr.innerHTML = '';
+        if ( qr ) {
+        const qrGfx = kjua({
+            text: payload,
+            rounded: 50,
+            size: 500,
+            render: 'canvas',
+        });
+        qr.appendChild( qrGfx );
+        }
+    }
+
+    function getInvoice(el, callback) {
+        renderQr("lnbc100n1p3shfjfpp5t6lwm4z5t5cjxr99a4c03xt7t7ldt82002sxfgwsv5zplepl3wjsdpv2phhwetjv4jzqcneypqyc6t8dp6xu6twva2xjuzzda6qcqzpgxqyz5vqsp5t72r4e45avrkyj9gxcglt9e6s0h55vpuk700y7xpplt3lvsyg0rs9qyyssqxm0m2pppj98cspsflwfpcqrcmtdyr8dz3z7y9zuldlxq2alny78nuls2wxjsff9wzxz8x9z7595hjuh5fs4deluk7ekf7stsqk5cpjqpz5elrg");
     }
 </script>
 </body>
