@@ -257,7 +257,7 @@
 </section>
 
 <script type="application/javascript">
-    Telegram.WebApp.ready();
+    
 
     const qr = document.getElementById('qr');
     if ( qr ) {
@@ -287,6 +287,8 @@
     Telegram.WebApp.BackButton.isVisible = true;
     Telegram.WebApp.BackButton.show();
     Telegram.WebApp.MainButton.show();
+
+    Telegram.WebApp.ready();
 
 
     Telegram.WebApp.onEvent('themeChanged', function() {
