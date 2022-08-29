@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +9,8 @@
     <meta name="MobileOptimized" content="176" />
     <meta name="HandheldFriendly" content="True" />
     <meta name="robots" content="noindex,nofollow" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
     <title>LNURL</title>
     <script src="https://unpkg.com/kjua@0.6.0/dist/kjua.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
@@ -40,13 +41,15 @@
             display: block;
             width: 100%;
             font-size: 14px;
-            margin: 15px 0;
-            padding: 12px 20px;
             border: none;
-            border-radius: 4px;
             background-color: var(--tg-theme-button-color, #50a8eb);
             color: var(--tg-theme-button-text-color, #ffffff);
             cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--tg-theme-button-color, #50a8eb);
+            color: var(--tg-theme-button-text-color, #ffffff);            
         }
 
         button[disabled] {
@@ -58,14 +61,15 @@
         input {
             font-size: 14px;
             text-align: center; 
-            padding: 12px 20px;
-            margin: 15px 0;
             border: none;
-            border-radius: 4px;
-            background-color: var(--tg-theme-bg-color, #f5f5f5);
-            color: var(--tg-theme-text-color, #1a1a1a);
+            background-color: var(--tg-theme-bg-color, #f5f5f5) !important; 
+            color: var(--tg-theme-text-color, #1a1a1a) !important;
         }
 
+        .input-group-text {
+            background-color: var(--tg-theme-bg-color, #f5f5f5) !important; 
+            color: var(--tg-theme-text-color, #1a1a1a) !important;
+        }
 
         section {
             padding: 5px 5px 65px;
@@ -182,8 +186,7 @@
         h1 { 
             font-size: 120%; 
             word-wrap: break-word;
-            margin: 0.1em;
-            margin-bottom: 0.3em;
+            margin: 0.5em;
         }
 
         .qr-container {
@@ -216,6 +219,7 @@
         padding: 12px 20px;
         column-gap: 10px;
         row-gap: 1em;
+        align-items: center;
         }
     </style>
 </head>
@@ -233,11 +237,15 @@
     <div id="buttons">
         <!-- <button onclick="webviewClose();">Close</button> -->
         <div class="wrapper">
-            <div>
-                <input type="number" min="1" inputmode="numeric" pattern="[0-9]*" id="invoiceAmount" placeholder="amount in sat" style="width: 80%"></input>
+            <label class="sr-only" for="inlineFormInputGroup">Username</label>
+            <div class="input-group">
+                <input type="number" class="form-control" min="1" inputmode="numeric" pattern="[0-9]*" id="invoiceAmount" placeholder="amount">
+                <div class="input-group-append">
+                    <div class="input-group-text" id="inputCurrency"></div>
+                </div>
             </div>
             <div>
-                <button onclick="invoiceButtonClick();" style="display: inline;" id="requestInvoice">Invoice</button>
+                <button class="btn btn-primary" onclick="invoiceButtonClick();" style="display: inline;" id="requestInvoice">Invoice</button>
             </div>
         </div>
     </div>
@@ -247,17 +255,22 @@
     Telegram.WebApp.ready();
 
     // render the LNURL pay QR code
-    var s = "LNURLPAY LNURLPAY LNURLPAY LNURLPAY v v LNURLPAY LNURLPAY";
+    var s = "{{.LNURLPay}}";
+    const currencies = ["sat", "USD", "EUR"];
+    var currency_idx = 0;
+    document.getElementById("inputCurrency").innerHTML = currencies[0];
+
     renderQr(s);
     
     // data passed form telegram server
     const initData = Telegram.WebApp.initData || '';
     const initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
 
-    document.querySelector('#greeting').innerHTML = "username@ln.tips";
+    document.querySelector('#greeting').innerHTML = "{{.Username}}@ln.tips";
     // document.querySelector('#initData').innerHTML = JSON.stringify(initData, null, 2);
     // document.querySelector('#initDataUnsafe').innerHTML = JSON.stringify(initDataUnsafe, null, 2);
 
+    // react to theme changes
     try {
         document.querySelector('#themeData').html(JSON.stringify(Telegram.WebApp.themeParams, null, 2));
         Telegram.WebApp.onEvent('themeChanged', function() {
@@ -268,7 +281,6 @@
     }
 
 
-
     // listen for enter in input field
     var el = document.getElementById("invoiceAmount");
     el.addEventListener("keydown", function(event) {
@@ -276,16 +288,34 @@
             document.getElementById("requestInvoice").click();
         }
         document.getElementById("requestInvoice").innerHTML = "Invoice"
+        // revert color of button
+        $('#requestInvoice').removeClass('btn-danger').addClass('btn-primary');
     });
 
-    
-     function invoiceButtonClick() {
-        getInvoice(this, this);
-        
+    var el = document.getElementById("inputCurrency");
+    el.addEventListener("click", function(event) {
+        currency_idx += 1;
+        $(this).html(currencies[currency_idx%(currencies.length)]);
+        $('#requestInvoice').removeClass('btn-danger').addClass('btn-primary');
+    });
+
+    // ------------------ functions ------------------
+
+    function invoiceButtonClick() {
+        var c = "{{.Callback}}";
+        getInvoice(this, c);
+        // hide keyboard and scroll up
         document.getElementById("invoiceAmount").blur();
         window.scrollTo(0, 0);
     }
-    
+
+    function invoiceButtonDisplayError(message) {
+        btn = document.getElementById("requestInvoice")
+        btn.innerHTML = message
+        // update color of button
+        $('#requestInvoice').removeClass('btn-primary').addClass('btn-danger');
+    }
+
     function webviewClose() {
         Telegram.WebApp.close();
     }
@@ -301,16 +331,51 @@
             render: 'canvas',
         });
         qr.appendChild( qrGfx );
+        var href_link = "lightning:" + payload;
+        qr.setAttribute('href', window.open("javascript:window.open('"+ href_link+ "');" ));
         }
     }
 
     function getInvoice(el, callback) {
-        var pr = "lnbc100n1p3shfjfpp5t6lwm4z5t5cjxr99a4c03xt7t7ldt82002sxfgwsv5zplepl3wjsdpv2phhwetjv4jzqcneypqyc6t8dp6xu6twva2xjuzzda6qcqzpgxqyz5vqsp5t72r4e45avrkyj9gxcglt9e6s0h55vpuk700y7xpplt3lvsyg0rs9qyyssqxm0m2pppj98cspsflwfpcqrcmtdyr8dz3z7y9zuldlxq2alny78nuls2wxjsff9wzxz8x9z7595hjuh5fs4deluk7ekf7stsqk5cpjqpz5elrg";
-        console.log(pr);
-        // update qr code
-        renderQr(pr);
-        document.querySelector('#greeting').innerHTML = "Pay " + 10 + " sat";
+        curr_idx = currency_idx%currencies.length
+        var invoiceAmount = Number(document.getElementById("invoiceAmount").value);
+        if ((currencies[curr_idx] == "sat" && !Number.isInteger(invoiceAmount)) || invoiceAmount < 1) {
+            invoiceButtonDisplayError("Invalid")
+            return false;
+        }
+        var amountQueryParam;
+        if (currencies[curr_idx] == "sat") {
+            amountQueryParam = invoiceAmount * 1000 // sat to msat
+        } else {
+            amountQueryParam = invoiceAmount + currencies[curr_idx]
+        }
+        fetch(callback)
+        .then(data => {
+            return data.json();
+        })
+        .then(r => {
+            console.log(r);
+            console.log("requesting invoice with amount " + amountQueryParam);
+            fetch(r.callback + '?amount='+ amountQueryParam).then(data => {
+            return data.json();
+            })
+            .then(r => { 
+                console.log(r);
+                if (r.status == "OK"){
+                    // update qr code
+                    renderQr(r.pr);
+                    document.querySelector('#greeting').innerHTML = "Pay " + invoiceAmount + " " + currencies[curr_idx];
+                } else {
+                    invoiceButtonDisplayError("Error")
+                    return false;
+                }
+
+            })
+        })
     }
 </script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>
